@@ -10,7 +10,9 @@ import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
 import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
@@ -50,9 +52,11 @@ public class LocacaoServiceTest {
     @Test
     public void TesteLocacaoDeFilme() throws Exception {
         Usuario usuario = new Usuario("Leonardo");
-        Filme filme = new Filme("Resgate do Soldado Ryan", 1, 10.0);
+        List<Filme> filmes = Arrays.asList(
+                new Filme("Resgate do Soldado Ryan", 1, 10.0)
+        );
 
-        Locacao locacao = locacaoService.alugarFilme(usuario, filme);
+        Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         error.checkThat(locacao.getValor(), is(equalTo(10.0)));
         error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
@@ -63,19 +67,23 @@ public class LocacaoServiceTest {
     @Test(expected = FilmeSemEstoqueException.class)
     public void TesteLocacaoFilmeSemEstoque() throws Exception {
         Usuario usuario = new Usuario("Leonardo");
-        Filme filme = new Filme("Resgate do Soldado Ryan", 0, 10.0);
+        List<Filme> filmes = Arrays.asList(
+                new Filme("Resgate do Soldado Ryan", 0, 10.0)
+        );
 
-        locacaoService.alugarFilme(usuario, filme);
+        locacaoService.alugarFilme(usuario, filmes);
     }
 
     // Forma Robusta
     @Test
     public void TesteLocacaoUsuarioVazio() throws FilmeSemEstoqueException {
         LocacaoService locacaoService = new LocacaoService();
-        Filme filme = new Filme("Resgate do Soldado Ryan", 1, 10.0);
+        List<Filme> filmes = Arrays.asList(
+                new Filme("Resgate do Soldado Ryan", 1, 10.0)
+        );
 
         try {
-            locacaoService.alugarFilme(null, filme);
+            locacaoService.alugarFilme(null, filmes);
             Assert.fail();
         } catch (LocadoraException e) {
             assertThat(e.getMessage(), is("Usuário vazio"));
